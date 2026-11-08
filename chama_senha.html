@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="generator" content="RSD 5.0.3490">
+  <title> Portal de Senhas H.OLHOS GROTTONE</title>
+  <link rel="stylesheet" href="./static/css/foundation.min.css">
+  <link rel="stylesheet" href="./static/css/wireframe-theme.min.css">
+  <script>document.createElement( "picture" );</script>
+  <script class="picturefill" async="async" src="./static/js/picturefill.min.js"></script>
+  <link rel="stylesheet" href="./static/css/main.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Archivo:400,500,b%7CMontserrat:100,300,400%7CRoboto:400,500">
+</head>
+
+<body class="no-js">
+<div class="container surrounding-padding-col-1 featured-projects" id="featured-projects">
+    <div class="container six-hundred-centered-cont">
+      <h2 class="centered turquoise">
+        <center><h2><br></h2><img src="./static/images/holhos.png" width="600" height="200" alt="" title="" /></center>
+        <font color="#0a0a0a">Nossa central de senhas foi pensada na sua praticidade.</font>
+      </h2>
+      <p class="paragraph centered light">Escolha uma das opções abaixo</p>
+    </div>
+    <div class="container sample-60-buttons-cont twelve-hundred-centered-cont" data-outofview="true">
+        
+           <a class="link-container sample-60-advanced-bt">
+    <div class="container">
+        <div class="responsive-picture sample-60-img">
+            <picture>
+                <img alt="Placeholder Picture" width="600" height="600" src="./static/images/6.jpg">
+            </picture>
+        </div>
+        <h6 class="project-title-box">CHAMADA DE SENHA</h6>
+        <p class="paragraph text-card">Digite a senha e a mesa de chamada</p>
+        <form action="/chamar" method="POST">
+            <input type="text" name="senha" id="senha"><br>
+            <input type="text" name="mesa" id="mesa"><br>
+            <input type="submit" value="Enviar">
+        </form>
+    </div></i></span>
+        </a>
+        
+        
+      
+            </div>
+  </div>
+  
+  <div class="surrounding-padding-col-low footer-copyright container">
+    <div class="container one-thousand-centered-cont">
+      <p class="paragraph footer-copyright-text">Copyright © 2024 H.OLHOS GROTTONE</p>
+    </div>
+  </div>
+  <script src="./static/js/jquery.min.js"></script>
+  <script src="./static/js/outofview.js"></script>
+  <script src="./static/js/what-input.min.js"></script>
+  <script src="./static/js/foundation.min.js"></script>
+  <script>$(document).foundation();</script>
+<!-- SMOOTH SCROLL -->
+<script>
+$(function() {
+  $('a.smooth-scroll[href*="#"]:not([href="#"])').click(function() {
+    if (location.pathname.replace(/^\//,'') == this.pathname.replace(/^\//,'') && location.hostname == this.hostname) {
+      var target = $(this.hash);
+      target = target.length ? target : $('[name=' + this.hash.slice(1) +']');
+      if (target.length) {
+        $('html,body').animate({
+          scrollTop: target.offset().top
+        }, 1000);
+        return false;
+      }
+    }
+  });
+});
+</script>
+<!-- End of SMOOTH SCROLL -->
+</body>
+</html>
