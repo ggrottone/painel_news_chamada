@@ -1,0 +1,524 @@
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Painel Multimídia - YouTube, RSS & Info</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body, html { width: 100%; height: 100%; overflow: hidden; font-family: Arial, sans-serif; background: #000; color: #fff; }
+        
+        /* Layout Geral Split (Horizontal) */
+        .wrapper { display: flex; width: 100%; height: 100%; }
+
+        /* Lado Esquerdo: Vídeo + Barra Inferior de RSS */
+        .main-content { display: flex; flex-direction: column; width: 60%; height: 100%; }
+
+        /* Container para o Player do YouTube */
+        .video-container { width: 100%; height: 90vh; background: #000; }
+        iframe { width: 100%; height: 100%; border: none; }
+
+        /* Barra de Notícias Redesenhada com Flexbox */
+       .barra-noticias {
+            height: auto;
+            min-height: 80px;
+            max-height: 110px;
+            background: #fff;
+            color: #777;
+            display: flex;
+            align-items: stretch;
+            justify-content: space-between;
+            padding: 12px 30px;
+            border-top: 2px solid #222;
+        }
+
+        /* Container do Logo na Barra Lateral */
+        .logo-container {
+            margin-top: auto; 
+            text-align: center;
+            padding-top: 15px;
+            border-top: 1px solid #9c9292;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            flex-shrink: 0;
+        }
+        .logo-container img {
+            max-width: 60%;
+            max-height: 60px;
+            height: auto;
+            object-fit: contain;
+            border-radius: 8px;
+        }
+        .logo-texto {
+            font-size: 1.2rem;
+            font-weight: bold;
+            letter-spacing: 2px;
+            color: #3b82f6;
+            text-transform: uppercase;
+        }
+
+        .espaco-compensador {
+            width: 30px;
+        }
+
+        .noticia-texto {
+            flex: 1;
+            font-size: 1.0rem;
+            text-align: center;
+            padding: 0 20px;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Widget do Relógio */
+        .relogio-container {
+            width: 150px;
+            text-align: right;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .relogio-hora {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #3b82f6;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        .relogio-fuso {
+            font-size: 0.75rem;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 2px;
+        }
+
+        /* Barra Lateral Direita */
+        .sidebar {
+            width: 40%;
+            height: 100%;
+            background: #b8afaf;
+            border-left: 2px solid #222;
+            display: flex;
+            flex-direction: column;
+            padding: 20px 15px;
+            gap: 15px;
+            overflow-y: auto;
+            scrollbar-width: none;
+        }
+        .sidebar::-webkit-scrollbar {
+            display: none;
+        }
+        .widget {
+            background: #f8f5f5;
+            border: 1px solid #333;
+            border-radius: 12px;
+            padding: 15px 10px;
+            text-align: center;
+            flex-shrink: 0;
+            color: #333;
+        }
+        .widget h3 {
+            font-size: 1.7rem;
+            text-transform: uppercase;
+            color: #666;
+            margin-bottom: 10px;
+            letter-spacing: 1px;
+        }
+        
+        .clima-linha-unica {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #3b82f6;
+            white-space: nowrap;
+        }
+
+        .widget-sub {
+            font-size: 1.9rem;
+            color: #777;
+            margin-top: 8px;
+        }
+
+        /* Estilos do Painel de Senhas */
+        .senha-atual-box {
+            background: #1e293b;
+            color: #fff;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+        }
+        .senha-destaque {
+            font-size: 4.2rem;
+            font-weight: 800;
+            color: #ffffff;
+            line-height: 1;
+        }
+        .mesa-destaque {
+            font-size: 4.2rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-top: 4px;
+        }
+        .lista-senhas-anteriores {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .item-senha-anterior {
+            display: flex;
+            justify-content: space-between;
+            background: #e2e8f0;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #334155;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="wrapper">
+        <div class="main-content">
+            <div class="video-container">
+                <div id="youtube-player"></div>
+            </div>
+            
+            <div class="barra-noticias">
+                <div class="espaco-compensador"></div> 
+                <div class="noticia-texto" id="barraNoticias">
+                    Carregando notícias...
+                </div>
+                
+                <div class="relogio-container">
+                    <div class="relogio-hora" id="relogio">00:00:00</div>
+                    <div class="relogio-fuso">GMT-3</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="sidebar">
+
+            <!-- WIDGET DE TEMPO EM LINHA ÚNICA -->
+            <div class="widget">
+                <div class="clima-linha-unica">
+                    <span>CLIMA EM SANTOS</span>
+                    <span id="temp-santos">--°C</span>
+                    <span>-</span>
+                    <span id="condicao-santos">Obtendo dados...</span>
+                </div>
+                <div class="widget-sub" id="minmax-santos" style="font-size: 1.0rem; margin-top: 8px;">-- / --</div>
+            </div>
+
+            <!-- PAINEL DE SENHAS E MESAS -->
+            <div class="widget" id="widget-senhas">
+                <h3>Chamada de Senhas</h3>
+                <div class="senha-atual-box">
+                    <div class="senha-destaque" id="senha-atual-num">---</div>
+                    <div class="mesa-destaque" id="senha-atual-mesa">MESA --</div>
+                </div>
+                <div class="widget-sub" style="font-size: 1.2rem; margin-bottom: 6px; font-weight: bold;">ÚLTIMAS CHAMADAS</div>
+                <ul class="lista-senhas-anteriores" id="lista-senhas">
+                    <!-- Senhas anteriores inseridas via JS -->
+                </ul>
+            </div>
+
+            <!-- LOGO COM TEXTO AO LADO -->
+            <div class="logo-container">
+                <img src="./static/images/logo1.png" alt="Logotipo"> 
+                <div class="logo-texto">INFORMA</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function ativarTelaCheia() {
+            const elem = document.documentElement;
+            if (elem.requestFullscreen) {
+                elem.requestFullscreen();
+            } else if (elem.webkitRequestFullscreen) {
+                elem.webkitRequestFullscreen();
+            } else if (elem.msRequestFullscreen) {
+                elem.msRequestFullscreen();
+            }
+        }
+
+        window.addEventListener('click', function() {
+            ativarTelaCheia();
+        }, { once: true });
+
+        // ==========================================
+        // ÁUDIO E VOZ DA CHAMADA
+        // ==========================================
+        function tocarTresBips() {
+            return new Promise((resolve) => {
+                try {
+                    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                    if (audioCtx.state === 'suspended') {
+                        audioCtx.resume();
+                    }
+
+                    const totalBips = 3;
+                    const duracaoBip = 0.2;
+                    const intervalo = 0.15;
+
+                    for (let i = 0; i < totalBips; i++) {
+                        const osc = audioCtx.createOscillator();
+                        const gain = audioCtx.createGain();
+
+                        osc.type = 'sine';
+                        osc.frequency.value = 880;
+
+                        const inicio = audioCtx.currentTime + (i * (duracaoBip + intervalo));
+
+                        gain.gain.setValueAtTime(1.0, inicio);
+                        gain.gain.setValueAtTime(1.0, inicio + duracaoBip - 0.02);
+                        gain.gain.exponentialRampToValueAtTime(0.0001, inicio + duracaoBip);
+
+                        osc.connect(gain);
+                        gain.connect(audioCtx.destination);
+
+                        osc.start(inicio);
+                        osc.stop(inicio + duracaoBip);
+                    }
+
+                    const tempoTotalMs = (totalBips * (duracaoBip + intervalo)) * 1000;
+                    setTimeout(resolve, tempoTotalMs);
+
+                } catch (e) {
+                    console.warn("Erro ao reproduzir bips:", e);
+                    resolve();
+                }
+            });
+        }
+
+        function falarSenhaDuasVezes(senha, mesa) {
+            return new Promise((resolve) => {
+                if (!('speechSynthesis' in window)) {
+                    resolve();
+                    return;
+                }
+
+                window.speechSynthesis.cancel();
+
+                let senhaFormatada = senha.split('').join(' ');
+                let texto = `Senha ${senhaFormatada}, ${mesa}`;
+                let repeticao = 0;
+
+                function emitirFala() {
+                    let utterance = new SpeechSynthesisUtterance(texto);
+                    utterance.lang = 'pt-BR';
+                    utterance.rate = 0.9;
+                    utterance.volume = 1.0;
+
+                    utterance.onend = function() {
+                        repeticao++;
+                        if (repeticao < 3) {
+                            setTimeout(emitirFala, 600);
+                        } else {
+                            resolve();
+                        }
+                    };
+
+                    utterance.onerror = function() {
+                        resolve();
+                    };
+
+                    window.speechSynthesis.speak(utterance);
+                }
+
+                emitirFala();
+            });
+        }
+
+        async function anunciarNovaSenha(senha, mesa) {
+            if (player && typeof player.mute === 'function') {
+                player.mute();
+            }
+
+            await tocarTresBips();
+            await falarSenhaDuasVezes(senha, mesa);
+
+            if (player && typeof player.unMute === 'function') {
+                player.unMute();
+            }
+        }
+
+        // ==========================================
+        // 0. RELÓGIO EM TEMPO REAL (GMT-3)
+        // ==========================================
+        function atualizarRelogio() {
+            const agora = new Date();
+            const formatador = new Intl.DateTimeFormat('pt-BR', {
+                timeZone: 'America/Sao_Paulo',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: false
+            });
+            document.getElementById('relogio').innerText = formatador.format(agora);
+        }
+        
+        setInterval(atualizarRelogio, 1000);
+        atualizarRelogio(); 
+
+        // ==========================================
+        // 1. CONFIGURAÇÃO PLAYER YOUTUBE
+        // ==========================================
+        var tag = document.createElement('script');
+        tag.src = "https://www.youtube.com/iframe_api";
+        var firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+        var player;
+
+        function onYouTubeIframeAPIReady() {
+            player = new YT.Player('youtube-player', {
+                playerVars: {
+                    'listType': 'playlist',
+                    'list': 'PLMMimlbsy2Fa1nMpwYvVyP1k0qv25bcMj',
+                    'autoplay': 1,
+                    'loop': 1,
+                    'controls': 1,
+                    'rel': 0,
+                    'mute': 1
+                },
+                events: {
+                    'onReady': onPlayerReady
+                }
+            });
+        }
+
+        function onPlayerReady(event) {
+            event.target.playVideo();
+        }
+
+        // ==========================================
+        // 2. FEED RSS DE NOTÍCIAS
+        // ==========================================
+        const rssUrl = encodeURIComponent('https://g1.globo.com/rss/g1/tecnologia/');
+        const apiRss = `https://api.rss2json.com/v1/api.json?rss_url=${rssUrl}`;
+        let noticias = [];
+        let indiceNoticiaAtual = 0;
+        const barra = document.getElementById('barraNoticias');
+
+        fetch(apiRss)
+            .then(res => res.json())
+            .then(data => {
+                if(data.status === 'ok') {
+                    noticias = data.items.map(item => `📢 ${item.title}`);
+                    mostrarProximaNoticia();
+                    setInterval(mostrarProximaNoticia, 15000);
+                } else {
+                    barra.innerText = "Erro no feed RSS.";
+                }
+            })
+            .catch(() => barra.innerText = "Erro ao conectar ao RSS.");
+
+        function mostrarProximaNoticia() {
+            if (noticias.length > 0) {
+                barra.innerText = noticias[indiceNoticiaAtual];
+                indiceNoticiaAtual = (indiceNoticiaAtual + 1) % noticias.length;
+            }
+        }
+
+        // ==========================================
+        // 3. PREVISÃO DO TEMPO SANTOS
+        // ==========================================
+        function atualizarClima() {
+            const urlClima = "https://api.open-meteo.com/v1/forecast?latitude=-23.9608&longitude=-46.3336&current_weather=true&daily=temperature_2m_max,temperature_2m_min&timezone=America/Sao_Paulo";
+            
+            fetch(urlClima)
+                .then(res => res.json())
+                .then(data => {
+                    const tempAtual = Math.round(data.current_weather.temperature);
+                    const tempMax = Math.round(data.daily.temperature_2m_max[0]);
+                    const tempMin = Math.round(data.daily.temperature_2m_min[0]);
+                    const weatherCode = data.current_weather.weathercode;
+
+                    let condicao = "Limpo";
+                    if (weatherCode >= 1 && weatherCode <= 3) condicao = "Parcialmente Nublado";
+                    else if (weatherCode >= 45 && weatherCode <= 48) condicao = "Névoa / Nevoeiro";
+                    else if (weatherCode >= 51 && weatherCode <= 67) condicao = "Chuva Leve";
+                    else if (weatherCode >= 80 && weatherCode <= 82) condicao = "Pancadas de Chuva";
+                    else if (weatherCode >= 95) condicao = "Tempestade";
+
+                    document.getElementById('temp-santos').innerText = `${tempAtual}°C`;
+                    document.getElementById('condicao-santos').innerText = condicao;
+                    document.getElementById('minmax-santos').innerText = `Min: ${tempMin}°C / Max: ${tempMax}°C`;
+                })
+                .catch(() => {
+                    document.getElementById('condicao-santos').innerText = "Erro ao obter clima";
+                });
+        }
+
+        // ==========================================
+        // 4. LEITURA DE SENHAS VIA API FLASK
+        // ==========================================
+        let ultimaSenhaExibida = null;
+
+        function atualizarSenhasAPI() {
+            fetch('/chamadas')
+                .then(res => {
+                    if (!res.ok) throw new Error("Status HTTP: " + res.status);
+                    return res.json();
+                })
+                .then(dados => {
+                    if (!dados || !dados.sucesso) return;
+
+                    const elSenha = document.getElementById('senha-atual-num');
+                    const elMesa = document.getElementById('senha-atual-mesa');
+
+                    if (dados.atual) {
+                        const novaSenha = dados.atual.senha;
+                        const novaMesa = dados.atual.mesa;
+
+                        if (ultimaSenhaExibida !== null && ultimaSenhaExibida !== novaSenha) {
+                            anunciarNovaSenha(novaSenha, novaMesa);
+                        }
+
+                        ultimaSenhaExibida = novaSenha;
+
+                        if (elSenha) elSenha.innerText = novaSenha;
+                        if (elMesa) elMesa.innerText = novaMesa;
+                    } else {
+                        if (elSenha) elSenha.innerText = "---";
+                        if (elMesa) elMesa.innerText = "MESA --";
+                    }
+
+                    const listaUl = document.getElementById('lista-senhas');
+                    if (listaUl) {
+                        listaUl.innerHTML = '';
+                        if (dados.historico && dados.historico.length > 0) {
+                            dados.historico.forEach(item => {
+                                const li = document.createElement('li');
+                                li.className = 'item-senha-anterior';
+                                li.innerHTML = `<span>${item.senha}</span><span>${item.mesa}</span>`;
+                                listaUl.appendChild(li);
+                            });
+                        }
+                    }
+                })
+                .catch(err => console.warn("Erro ao buscar senhas:", err));
+        }
+
+        // Inicialização ao carregar
+        window.onload = function() {
+            atualizarClima();
+            atualizarSenhasAPI();
+            
+            setInterval(atualizarClima, 600000);
+            setInterval(atualizarSenhasAPI, 2000);
+        };
+    </script>
+</body>
+</html>
