@@ -1,0 +1,410 @@
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Painel Multimídia - YouTube, RSS & Info</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body, html { width: 100%; height: 100%; overflow: hidden; font-family: Arial, sans-serif; background: #000; color: #fff; }
+        
+        /* Layout Geral Split (Horizontal) */
+        .wrapper { display: flex; width: 100%; height: 100%; }
+
+        /* Lado Esquerdo: Vídeo + Barra Inferior de RSS */
+        .main-content { display: flex; flex-direction: column; width: 80%; height: 100%; }
+
+        /* Container para o Player do YouTube */
+        .video-container { width: 100%; height: 90vh; background: #000; }
+        iframe { width: 100%; height: 100%; border: none; }
+
+        /* Barra de Notícias Redesenhada com Flexbox */
+       .barra-noticias {
+            height: auto; /* Deixa de ser rígido */
+            min-height: 80px;  /* Garante o tamanho das duas linhas de texto */
+            max-height: 110px; /* Impede que a barra cresça demais em telas grandes */
+            background: #fff;
+            color: #777;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 30px;
+            border-top: 2px solid #222;
+        }
+        /* Container do Logo na Barra Lateral */
+.logo-container {
+    margin-top: auto; 
+    text-align: center;
+    padding-top: 15px;
+    border-top: 1px solid #9c9292;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px; /* Compactado */
+    flex-shrink: 0; /* Protege o logotipo e o texto contra achatamentos */
+}
+.logo-container img {
+    max-width: 100%;
+    max-height: 80px; /* Reduzido de 90px para 80px para dar mais folga vertical */
+    height: auto;
+    object-fit: contain;
+    border-radius: 8px;
+}
+.logo-texto {
+    font-size: 1.1rem; /* Reduzido sutilmente de 1.2rem para 1.1rem */
+    font-weight: bold;
+    letter-spacing: 3px;
+    color: #3b82f6;
+    text-transform: uppercase;
+}
+        /* Mantém o alinhamento das notícias perfeitamente centralizado */
+        .espaco-compensador {
+            width: 150px;
+        }
+
+        .noticia-texto {
+            flex: 1;
+            font-size: 1.6rem;
+            text-align: center;
+            padding: 0 20px;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Widget do Relógio no Canto Direito */
+        .relogio-container {
+            width: 150px;
+            text-align: right;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .relogio-hora {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #3b82f6;
+            font-family: 'Courier New', Courier, monospace; /* Evita flutuações de tamanho ao mudar números */
+        }
+
+        .relogio-fuso {
+            font-size: 0.75rem;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 2px;
+        }
+
+        /* Barra Lateral Direita (Widgets) */
+        .sidebar {
+    width: 20%;
+    height: 100%;
+    background: #b8afaf;
+    border-left: 2px solid #222;
+    display: flex;
+    flex-direction: column;
+    padding: 20px 15px;
+    gap: 15px; /* Reduzido o espaço para aproximar os elementos */
+    overflow-y: auto; /* Ativa a rolagem de segurança se a tela for muito curta */
+    scrollbar-width: none; /* Oculta a barra de rolagem no Firefox */
+}
+.sidebar::-webkit-scrollbar {
+    display: none; /* Oculta a barra de rolagem no Chrome, Safari e Edge */
+}
+.widget {
+    background: #f8f5f5;
+    border: 1px solid #333;
+    border-radius: 12px;
+    padding: 15px 10px; /* Compactado ligeiramente */
+    text-align: center;
+    flex-shrink: 0; /* Impede o navegador de amassar ou deformar o widget */
+}
+.widget h3 {
+    font-size: 0.85rem; /* Ajustado */
+    text-transform: uppercase;
+    color: #888;
+    margin-bottom: 10px;
+    letter-spacing: 1px;
+}
+.widget-value {
+    font-size: 1.6rem; /* Ajustado para melhor encaixe lateral */
+    font-weight: bold;
+    color: #3b82f6;
+}
+        .widget-sub {
+            font-size: 0.9rem;
+            color: #aaa;
+            margin-top: 8px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="wrapper">
+        <div class="main-content">
+            <div class="video-container">
+                <div id="player-youtube"></div>
+            </div>
+            
+            <div class="barra-noticias">
+                <div class="espaco-compensador"></div> <div class="noticia-texto" id="barraNoticias">
+                    Carregando notícias...
+                </div>
+                
+                <div class="relogio-container">
+                    <div class="relogio-hora" id="relogio">00:00:00</div>
+                    <div class="relogio-fuso">GMT-3</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="sidebar">
+            <div class="widget">
+                <h3>Cotação do Dólar</h3>
+                <div class="widget-value" id="valor-dolar">Carregando...</div>
+                <div class="widget-sub">Comercial (USD/BRL)</div>
+            </div>
+
+            <div class="widget">
+                <h3>Cotação do EURO</h3>
+                <div class="widget-value" id="valor-euro">Carregando...</div>
+                <div class="widget-sub">Comercial (EUR/BRL)</div>
+            </div>
+
+            <div class="widget">
+                <h3>Tempo em Santos</h3>
+                <div class="widget-value" id="temp-santos">--°C</div>
+                <div class="widget-sub" id="condicao-santos">Obtendo dados...</div>
+                <div class="widget-sub" id="minmax-santos" style="font-size: 0.8rem; margin-top: 5px;">-- / --</div>
+            </div>
+            <div class="logo-container">
+                <img src="./static/images/logo1.png" alt="Logotipo"> <div class="logo-texto">INFORMA</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==========================================
+        // 0. RELÓGIO EM TEMPO REAL (GMT-3)
+        // ==========================================
+        function atualizarRelogio() {
+            const agora = new Date();
+            
+            // Força a formatação com base no fuso brasileiro de São Paulo (GMT-3)
+            const formatador = new Intl.DateTimeFormat('pt-BR', {
+                timeZone: 'America/Sao_Paulo',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: false
+            });
+            
+            document.getElementById('relogio').innerText = formatador.format(agora);
+        }
+        
+        setInterval(atualizarRelogio, 1000);
+        atualizarRelogio(); // Chamada inicial imediata
+
+
+        // ====================================================================
+        // 1. CONFIGURAÇÃO DOS VÍDEOS DO YOUTUBE (PLAYLIST OU LIVE)
+        // ====================================================================
+        const playlistYoutube = [
+             // Vídeo de teste (Natureza/Relaxante)
+            "p3MEaa_u9Oo"
+        ];
+
+        let indiceVideoAtual = 0;
+        let player;
+
+        // Carrega assincronamente a API de Iframe do YouTube
+        const tag = document.createElement('script');
+        tag.src = "https://www.youtube.com/iframe_api";
+        const firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+        function onYouTubeIframeAPIReady() {
+            player = new YT.Player('player-youtube', {
+                videoId: playlistYoutube[indiceVideoAtual],
+                playerVars: {
+                    'autoplay': 1,
+                    'mute': 1,        
+                    'controls': 1,    
+                    'rel': 0,         
+                    'modestbranding': 1
+                },
+                events: {
+                    'onReady': onPlayerReady,
+                    'onStateChange': onPlayerStateChange
+                }
+            });
+        }
+
+        function onPlayerReady(event) {
+            event.target.playVideo();
+        }
+
+        function onPlayerStateChange(event) {
+            if (event.data === YT.PlayerState.ENDED) {
+                if (playlistYoutube.length === 1) {
+                    player.playVideo();
+                } else {
+                    indiceVideoAtual = (indiceVideoAtual + 1) % playlistYoutube.length;
+                    player.loadVideoById(playlistYoutube[indiceVideoAtual]);
+                }
+            }
+        }
+
+
+        // ==========================================
+        // 2. FEED RSS DE NOTÍCIAS
+        // ==========================================
+        const rssUrl = encodeURIComponent('https://g1.globo.com/rss/g1/tecnologia/');
+        const apiRss = `https://api.rss2json.com/v1/api.json?rss_url=${rssUrl}`;
+        let noticias = [];
+        let indiceNoticiaAtual = 0;
+        const barra = document.getElementById('barraNoticias');
+
+        fetch(apiRss)
+            .then(res => res.json())
+            .then(data => {
+                if(data.status === 'ok') {
+                    noticias = data.items.map(item => `📢 ${item.title}`);
+                    mostrarProximaNoticia();
+                    setInterval(mostrarProximaNoticia, 15000);
+                } else {
+                    barra.innerText = "Erro no feed RSS.";
+                }
+            })
+            .catch(() => barra.innerText = "Erro ao conectar ao RSS.");
+
+        function mostrarProximaNoticia() {
+            if (noticias.length > 0) {
+                barra.innerText = noticias[indiceNoticiaAtual];
+                indiceNoticiaAtual = (indiceNoticiaAtual + 1) % noticias.length;
+            }
+        }
+
+
+        // ==========================================
+        // 3. COTAÇÃO DO DÓLAR (COM PLANO B INTEGRADO)
+        // ==========================================
+        function atualizarDolar() {
+            const apiPrincipal = "https://economia.awesomeapi.com.br/json/last/USD-BRL";
+            
+            function exibirValor(valor) {
+                const cotacao = parseFloat(valor).toFixed(2);
+                document.getElementById('valor-dolar').innerText = `R$ ${cotacao}`;
+            }
+
+            fetch(apiPrincipal)
+                .then(res => {
+                    if (!res.ok) throw new Error("Falha na API Principal");
+                    return res.json();
+                })
+                .then(data => {
+                    if (data && data.USDBRL) {
+                        exibirValor(data.USDBRL.bid);
+                    } else {
+                        throw new Error("Formato inválido");
+                    }
+                })
+                .catch(erro => {
+                    console.warn("API Principal falhou. Tentando API de contingência...");
+                    fetch("https://open.er-api.com/v6/latest/USD")
+                        .then(res => {
+                            if (!res.ok) throw new Error("Falha na API de contingência");
+                            return res.json();
+                        })
+                        .then(data => {
+                            if (data && data.rates && data.rates.BRL) {
+                                exibirValor(data.rates.BRL);
+                            }
+                        })
+                        .catch(erroGrave => {
+                            document.getElementById('valor-dolar').innerText = "R$ 5,09*";
+                        });
+                });
+        }
+
+        function atualizarEuro() {
+            const apiPrincipal = "https://economia.awesomeapi.com.br/json/last/EUR-BRL";
+            
+            function exibirValor(valor) {
+                const cotacao = parseFloat(valor).toFixed(2);
+                document.getElementById('valor-euro').innerText = `R$ ${cotacao}`;
+            }
+
+            fetch(apiPrincipal)
+                .then(res => {
+                    if (!res.ok) throw new Error("Falha na API Principal");
+                    return res.json();
+                })
+                .then(data => {
+                    if (data && data.EURBRL) {
+                        exibirValor(data.EURBRL.bid);
+                    } else {
+                        throw new Error("Formato inválido");
+                    }
+                })
+                .catch(erro => {
+                    console.warn("API Principal falhou. Tentando API de contingência...");
+                    fetch("https://open.er-api.com/v6/latest/EUR")
+                        .then(res => {
+                            if (!res.ok) throw new Error("Falha na API de contingência");
+                            return res.json();
+                        })
+                        .then(data => {
+                            if (data && data.rates && data.rates.BRL) {
+                                exibirValor(data.rates.BRL);
+                            }
+                        })
+                        .catch(erroGrave => {
+                            document.getElementById('valor-euro').innerText = "R$ 5,09*";
+                        });
+                });
+        }
+
+
+        // ==========================================
+        // 4. PREVISÃO DO TEMPO SANTOS (API OPEN-METEO)
+        // ==========================================
+        function atualizarClima() {
+            const urlClima = "https://api.open-meteo.com/v1/forecast?latitude=-23.9608&longitude=-46.3336&current_weather=true&daily=temperature_2m_max,temperature_2m_min&timezone=America/Sao_Paulo";
+            
+            fetch(urlClima)
+                .then(res => res.json())
+                .then(data => {
+                    const tempAtual = Math.round(data.current_weather.temperature);
+                    const tempMax = Math.round(data.daily.temperature_2m_max[0]);
+                    const tempMin = Math.round(data.daily.temperature_2m_min[0]);
+                    const weatherCode = data.current_weather.weathercode;
+
+                    let condicao = "Limpo";
+                    if (weatherCode >= 1 && weatherCode <= 3) condicao = "Parcialmente Nublado";
+                    else if (weatherCode >= 45 && weatherCode <= 48) condicao = "Névoa / Nevoeiro";
+                    else if (weatherCode >= 51 && weatherCode <= 67) condicao = "Chuva Leve";
+                    else if (weatherCode >= 80 && weatherCode <= 82) condicao = "Pancadas de Chuva";
+                    else if (weatherCode >= 95) condicao = "Tempestade";
+
+                    document.getElementById('temp-santos').innerText = `${tempAtual}°C`;
+                    document.getElementById('condicao-santos').innerText = condicao;
+                    document.getElementById('minmax-santos').innerText = `Min: ${tempMin}°C / Max: ${tempMax}°C`;
+                })
+                .catch(() => {
+                    document.getElementById('condicao-santos').innerText = "Erro ao obter clima";
+                });
+        }
+
+        // Executa as atualizações das APIs
+        atualizarDolar();
+        atualizarEuro();
+        atualizarClima();
+
+        // Atualiza a cada 10 minutos
+        setInterval(atualizarDolar, 600000);
+        setInterval(atualizarEuro, 600000);
+        setInterval(atualizarClima, 600000);
+    </script>
+</body>
+</html>
