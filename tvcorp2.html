@@ -18,9 +18,9 @@
 
         /* Barra de Notícias Redesenhada com Flexbox */
        .barra-noticias {
-            height: auto; /* Deixa de ser rígido */
-            min-height: 80px;  /* Garante o tamanho das duas linhas de texto */
-            max-height: 110px; /* Impede que a barra cresça demais em telas grandes */
+            height: auto;
+            min-height: 80px;
+            max-height: 110px;
             background: #fff;
             color: #777;
             display: flex;
@@ -29,33 +29,35 @@
             padding: 12px 30px;
             border-top: 2px solid #222;
         }
+
         /* Container do Logo na Barra Lateral */
-.logo-container {
-    margin-top: auto; 
-    text-align: center;
-    padding-top: 15px;
-    border-top: 1px solid #9c9292;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px; /* Compactado */
-    flex-shrink: 0; /* Protege o logotipo e o texto contra achatamentos */
-}
-.logo-container img {
-    max-width: 100%;
-    max-height: 80px; /* Reduzido de 90px para 80px para dar mais folga vertical */
-    height: auto;
-    object-fit: contain;
-    border-radius: 8px;
-}
-.logo-texto {
-    font-size: 1.1rem; /* Reduzido sutilmente de 1.2rem para 1.1rem */
-    font-weight: bold;
-    letter-spacing: 3px;
-    color: #3b82f6;
-    text-transform: uppercase;
-}
-        /* Mantém o alinhamento das notícias perfeitamente centralizado */
+        .logo-container {
+            margin-top: auto; 
+            text-align: center;
+            padding-top: 15px;
+            border-top: 1px solid #9c9292;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            flex-shrink: 0;
+        }
+        .logo-container img {
+            max-width: 60%;
+            max-height: 60px;
+            height: auto;
+            object-fit: contain;
+            border-radius: 8px;
+        }
+        .logo-texto {
+            font-size: 1.2rem;
+            font-weight: bold;
+            letter-spacing: 2px;
+            color: #3b82f6;
+            text-transform: uppercase;
+        }
+
         .espaco-compensador {
             width: 30px;
         }
@@ -71,7 +73,7 @@
             text-overflow: ellipsis;
         }
 
-        /* Widget do Relógio no Canto Direito */
+        /* Widget do Relógio */
         .relogio-container {
             width: 150px;
             text-align: right;
@@ -84,7 +86,7 @@
             font-size: 1.4rem;
             font-weight: bold;
             color: #3b82f6;
-            font-family: 'Courier New', Courier, monospace; /* Evita flutuações de tamanho ao mudar números */
+            font-family: 'Courier New', Courier, monospace;
         }
 
         .relogio-fuso {
@@ -95,7 +97,7 @@
             margin-top: 2px;
         }
 
-        /* Barra Lateral Direita (Widgets) */
+        /* Barra Lateral Direita */
         .sidebar {
             width: 40%;
             height: 100%;
@@ -104,34 +106,41 @@
             display: flex;
             flex-direction: column;
             padding: 20px 15px;
-            gap: 15px; /* Reduzido o espaço para aproximar os elementos */
-            overflow-y: auto; /* Ativa a rolagem de segurança se a tela for muito curta */
-            scrollbar-width: none; /* Oculta a barra de rolagem no Firefox */
+            gap: 15px;
+            overflow-y: auto;
+            scrollbar-width: none;
         }
         .sidebar::-webkit-scrollbar {
-            display: none; /* Oculta a barra de rolagem no Chrome, Safari e Edge */
+            display: none;
         }
         .widget {
             background: #f8f5f5;
             border: 1px solid #333;
             border-radius: 12px;
-            padding: 15px 10px; /* Compactado ligeiramente */
+            padding: 15px 10px;
             text-align: center;
-            flex-shrink: 0; /* Impede o navegador de amassar ou deformar o widget */
+            flex-shrink: 0;
             color: #333;
         }
         .widget h3 {
-            font-size: 1.7rem; /* Ajustado */
+            font-size: 1.7rem;
             text-transform: uppercase;
             color: #666;
             margin-bottom: 10px;
             letter-spacing: 1px;
         }
-        .widget-value {
-            font-size: 3.0rem; /* Ajustado para melhor encaixe lateral */
+        
+        .clima-linha-unica {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            font-size: 1.3rem;
             font-weight: bold;
             color: #3b82f6;
+            white-space: nowrap;
         }
+
         .widget-sub {
             font-size: 1.9rem;
             color: #777;
@@ -155,7 +164,7 @@
         .mesa-destaque {
             font-size: 4.2rem;
             font-weight: 700;
-            color: #38bdf8;
+            color: #ffffff;
             margin-top: 4px;
         }
         .lista-senhas-anteriores {
@@ -174,6 +183,12 @@
             font-weight: bold;
             color: #334155;
         }
+
+	/* Reduz a fonte quando a senha for longa (mais de 10 caracteres) */
+	.item-senha-anterior.senha-longa {
+    		font-size: 1.2rem; /* Ajuste o valor conforme necessário */
+	}
+
     </style>
 </head>
 <body>
@@ -199,16 +214,18 @@
 
         <div class="sidebar">
 
-        
-
+            <!-- WIDGET DE TEMPO EM LINHA ÚNICA -->
             <div class="widget">
-                <h3>Tempo em Santos</h3>
-                <div class="widget-value" id="temp-santos">--°C</div>
-                <div class="widget-sub" id="condicao-santos">Obtendo dados...</div>
-                <div class="widget-sub" id="minmax-santos" style="font-size: 0.8rem; margin-top: 5px;">-- / --</div>
+                <div class="clima-linha-unica">
+                    <span>CLIMA EM SANTOS</span>
+                    <span id="temp-santos">--°C</span>
+                    <span>-</span>
+                    <span id="condicao-santos">Obtendo dados...</span>
+                </div>
+                <div class="widget-sub" id="minmax-santos" style="font-size: 1.0rem; margin-top: 8px;">-- / --</div>
             </div>
 
-            <!-- NOVO WIDGET: SENHAS E MESAS -->
+            <!-- PAINEL DE SENHAS E MESAS -->
             <div class="widget" id="widget-senhas">
                 <h3>Chamada de Senhas</h3>
                 <div class="senha-atual-box">
@@ -221,6 +238,7 @@
                 </ul>
             </div>
 
+            <!-- LOGO COM TEXTO AO LADO -->
             <div class="logo-container">
                 <img src="./static/images/logo1.png" alt="Logotipo"> 
                 <div class="logo-texto">INFORMA</div>
@@ -229,46 +247,124 @@
     </div>
 
     <script>
-        function tocarBip() {
-    try {
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        
-        // Se o contexto estiver suspenso (bloqueio do navegador), tenta reativar
-        if (audioCtx.state === 'suspended') {
-            audioCtx.resume();
+        function ativarTelaCheia() {
+            const elem = document.documentElement;
+            if (elem.requestFullscreen) {
+                elem.requestFullscreen();
+            } else if (elem.webkitRequestFullscreen) {
+                elem.webkitRequestFullscreen();
+            } else if (elem.msRequestFullscreen) {
+                elem.msRequestFullscreen();
+            }
         }
 
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
+        window.addEventListener('click', function() {
+            ativarTelaCheia();
+        }, { once: true });
 
-        osc.type = 'sine';         // Onda senoidal (tom limpo de bip)
-        osc.frequency.value = 880; // Frequência em Hz (Nota Lá / tom padrão)
+        // ==========================================
+        // ÁUDIO E VOZ DA CHAMADA
+        // ==========================================
+        function tocarTresBips() {
+            return new Promise((resolve) => {
+                try {
+                    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                    if (audioCtx.state === 'suspended') {
+                        audioCtx.resume();
+                    }
 
-        const agora = audioCtx.currentTime;
-        const duracao = 1.0;       // Duração exata de 1 segundo
+                    const totalBips = 3;
+                    const duracaoBip = 0.2;
+                    const intervalo = 0.15;
 
-        // Volume MÁXIMO (1.0)
-        gain.gain.setValueAtTime(1.0, agora);
-        
-        // Suaviza levemente o final nos últimos 0.05s para evitar "estalo" nos alto-falantes
-        gain.gain.setValueAtTime(1.0, agora + duracao - 0.05);
-        gain.gain.exponentialRampToValueAtTime(0.0001, agora + duracao);
+                    for (let i = 0; i < totalBips; i++) {
+                        const osc = audioCtx.createOscillator();
+                        const gain = audioCtx.createGain();
 
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
+                        osc.type = 'sine';
+                        osc.frequency.value = 880;
 
-        osc.start(agora);
-        osc.stop(agora + duracao);
-    } catch (e) {
-        console.warn("Não foi possível reproduzir o áudio:", e);
-    }
-}
+                        const inicio = audioCtx.currentTime + (i * (duracaoBip + intervalo));
+
+                        gain.gain.setValueAtTime(1.0, inicio);
+                        gain.gain.setValueAtTime(1.0, inicio + duracaoBip - 0.02);
+                        gain.gain.exponentialRampToValueAtTime(0.0001, inicio + duracaoBip);
+
+                        osc.connect(gain);
+                        gain.connect(audioCtx.destination);
+
+                        osc.start(inicio);
+                        osc.stop(inicio + duracaoBip);
+                    }
+
+                    const tempoTotalMs = (totalBips * (duracaoBip + intervalo)) * 1000;
+                    setTimeout(resolve, tempoTotalMs);
+
+                } catch (e) {
+                    console.warn("Erro ao reproduzir bips:", e);
+                    resolve();
+                }
+            });
+        }
+
+        function falarSenhaDuasVezes(senha, mesa) {
+            return new Promise((resolve) => {
+                if (!('speechSynthesis' in window)) {
+                    resolve();
+                    return;
+                }
+
+                window.speechSynthesis.cancel();
+
+                //let senhaFormatada = senha.split('').join(' ');
+                let texto = ` ${senha}, ${mesa}`;
+		
+                let repeticao = 0;
+
+                function emitirFala() {
+                    let utterance = new SpeechSynthesisUtterance(texto);
+                    utterance.lang = 'pt-BR';
+                    utterance.rate = 0.9;
+                    utterance.volume = 1.0;
+
+                    utterance.onend = function() {
+                        repeticao++;
+                        if (repeticao < 3) {
+                            setTimeout(emitirFala, 600);
+                        } else {
+                            resolve();
+                        }
+                    };
+
+                    utterance.onerror = function() {
+                        resolve();
+                    };
+
+                    window.speechSynthesis.speak(utterance);
+                }
+
+                emitirFala();
+            });
+        }
+
+        async function anunciarNovaSenha(senha, mesa) {
+            if (player && typeof player.mute === 'function') {
+                player.mute();
+            }
+
+            await tocarTresBips();
+            await falarSenhaDuasVezes(senha, mesa);
+
+            if (player && typeof player.unMute === 'function') {
+                player.unMute();
+            }
+        }
+
         // ==========================================
         // 0. RELÓGIO EM TEMPO REAL (GMT-3)
         // ==========================================
         function atualizarRelogio() {
             const agora = new Date();
-            
             const formatador = new Intl.DateTimeFormat('pt-BR', {
                 timeZone: 'America/Sao_Paulo',
                 hour: '2-digit',
@@ -276,21 +372,15 @@
                 second: '2-digit',
                 hour12: false
             });
-            
             document.getElementById('relogio').innerText = formatador.format(agora);
         }
         
         setInterval(atualizarRelogio, 1000);
         atualizarRelogio(); 
 
-
-        // ====================================================================
-        // 1. CONFIGURAÇÃO DE CAPTURA AUTOMÁTICA DA LIVE DO YOUTUBE
-        // ====================================================================
-        const API_KEY = 'AIzaSyC62yTSO7Zg4v7P2U1lIhrGQ67seb-xwxk'; // Sua chave de API inserida[cite: 1]
-        const CHANNEL_ID = 'UCpDsvyyPUzoQPsjYWk1AIqg'; // Substitua pelo ID do seu canal[cite: 1]
-        const VIDEO_BACKUP = 'T8Jz3UVqYPg'; // Seu vídeo padrão caso não esteja ao vivo[cite: 1]
-
+        // ==========================================
+        // 1. CONFIGURAÇÃO PLAYER YOUTUBE
+        // ==========================================
         var tag = document.createElement('script');
         tag.src = "https://www.youtube.com/iframe_api";
         var firstScriptTag = document.getElementsByTagName('script')[0];
@@ -318,7 +408,6 @@
         function onPlayerReady(event) {
             event.target.playVideo();
         }
-
 
         // ==========================================
         // 2. FEED RSS DE NOTÍCIAS
@@ -349,87 +438,8 @@
             }
         }
 
-
         // ==========================================
-        // 3. COTAÇÃO DO DÓLAR E EURO
-        // ==========================================
-        function atualizarDolar() {
-            const apiPrincipal = "https://economia.awesomeapi.com.br/json/last/USD-BRL";
-            
-            function exibirValor(valor) {
-                const cotacao = parseFloat(valor).toFixed(2);
-                document.getElementById('valor-dolar').innerText = `R$ ${cotacao}`;
-            }
-
-            fetch(apiPrincipal)
-                .then(res => {
-                    if (!res.ok) throw new Error("Falha na API Principal");
-                    return res.json();
-                })
-                .then(data => {
-                    if (data && data.USDBRL) {
-                        exibirValor(data.USDBRL.bid);
-                    } else {
-                        throw new Error("Formato inválido");
-                    }
-                })
-                .catch(erro => {
-                    fetch("https://open.er-api.com/v6/latest/USD")
-                        .then(res => {
-                            if (!res.ok) throw new Error("Falha na API de contingência");
-                            return res.json();
-                        })
-                        .then(data => {
-                            if (data && data.rates && data.rates.BRL) {
-                                exibirValor(data.rates.BRL);
-                            }
-                        })
-                        .catch(() => {
-                            document.getElementById('valor-dolar').innerText = "R$ 5,09*";
-                        });
-                });
-        }
-
-        function atualizarEuro() {
-            const apiPrincipal = "https://economia.awesomeapi.com.br/json/last/EUR-BRL";
-            
-            function exibirValor(valor) {
-                const cotacao = parseFloat(valor).toFixed(2);
-                document.getElementById('valor-euro').innerText = `R$ ${cotacao}`;
-            }
-
-            fetch(apiPrincipal)
-                .then(res => {
-                    if (!res.ok) throw new Error("Falha na API Principal");
-                    return res.json();
-                })
-                .then(data => {
-                    if (data && data.EURBRL) {
-                        exibirValor(data.EURBRL.bid);
-                    } else {
-                        throw new Error("Formato inválido");
-                    }
-                })
-                .catch(erro => {
-                    fetch("https://open.er-api.com/v6/latest/EUR")
-                        .then(res => {
-                            if (!res.ok) throw new Error("Falha na API de contingência");
-                            return res.json();
-                        })
-                        .then(data => {
-                            if (data && data.rates && data.rates.BRL) {
-                                exibirValor(data.rates.BRL);
-                            }
-                        })
-                        .catch(() => {
-                            document.getElementById('valor-euro').innerText = "R$ 5,09*";
-                        });
-                });
-        }
-
-
-        // ==========================================
-        // 4. PREVISÃO DO TEMPO SANTOS
+        // 3. PREVISÃO DO TEMPO SANTOS
         // ==========================================
         function atualizarClima() {
             const urlClima = "https://api.open-meteo.com/v1/forecast?latitude=-23.9608&longitude=-46.3336&current_weather=true&daily=temperature_2m_max,temperature_2m_min&timezone=America/Sao_Paulo";
@@ -458,106 +468,110 @@
                 });
         }
 
+        // ==========================================
+        // 4. LEITURA DE SENHAS VIA API FLASK
+        // ==========================================
+        let ultimaSenhaExibida = null;
 
-        // ==========================================
-        // 5. LEITURA DO ARQUIVO CHAMADAS.TXT (SENHAS)
-        // ==========================================
-        function atualizarSenhasAPI_VELHO() {
-            fetch('http://sistema.holhosgrottone.com.br:8000/chamadas')
+        function atualizarSenhasAPI() {
+            fetch('/chamadas')
                 .then(res => {
-                    if (!res.ok) throw new Error("Erro na comunicação com a API");
+                    if (!res.ok) throw new Error("Status HTTP: " + res.status);
                     return res.json();
                 })
                 .then(dados => {
-                    if (!dados.sucesso) return;
+                    if (!dados || !dados.sucesso) return;
 
-                    // Atualiza a Senha Atual
-                    if (dados.atual) {
-                        document.getElementById('senha-atual-num').innerText = dados.atual.senha;
-                        document.getElementById('senha-atual-mesa').innerText = dados.atual.mesa;
-                    } else {
-                        document.getElementById('senha-atual-num').innerText = "---";
-                        document.getElementById('senha-atual-mesa').innerText = "MESA --";
-                    }
+                    const elSenha = document.getElementById('senha-atual-num');
+                    const elMesa = document.getElementById('senha-atual-mesa');
 
-                    // Atualiza a Lista de Senhas Anteriores
-                    const listaUl = document.getElementById('lista-senhas');
-                    listaUl.innerHTML = '';
+                    
+	if (dados.atual) {
+    const novaSenha = dados.atual.senha;
+    const novaMesa = dados.atual.mesa;
 
-                    if (dados.historico && dados.historico.length > 0) {
-                        dados.historico.forEach(item => {
-                            const li = document.createElement('li');
-                            li.className = 'item-senha-anterior';
-                            li.innerHTML = `<span>${item.senha}</span><span>${item.mesa}</span>`;
-                            listaUl.appendChild(li);
-                        });
-                    }
-                })
-                .catch(err => console.warn("Aguardando atualizações da API...", err));
+    if (ultimaSenhaExibida !== null && ultimaSenhaExibida !== novaSenha) {
+        anunciarNovaSenha(novaSenha, novaMesa);
+    }
+
+    ultimaSenhaExibida = novaSenha;
+
+    if (elSenha) {
+        elSenha.innerText = novaSenha;
+        
+        // Ajusta o tamanho da fonte se a senha tiver mais de 10 caracteres
+        if (novaSenha && novaSenha.length > 10) {
+            elSenha.style.fontSize = "2.5rem"; // Fonte menor para senhas longas
+        } else {
+            elSenha.style.fontSize = "4.2rem"; // Tamanho padrão (original do CSS)
         }
-let ultimaSenhaExibida = null;
+    }
+    
+if (elMesa) {
+        elMesa.innerText = novaMesa;
 
-function atualizarSenhasAPI() {
-    fetch('http://sistema.holhosgrottone.com.br:8000/chamadas')
-        .then(res => {
-            if (!res.ok) throw new Error("Status HTTP: " + res.status);
-            return res.json();
-        })
-        .then(dados => {
-            if (!dados || !dados.sucesso) return;
+        if (novaMesa && novaMesa.length > 10) {
+            elMesa.style.fontSize = "1.8rem"; // Fonte menor para descrições longas (ex: "CONSULTÓRIO 12")
+        } else {
+            elMesa.style.fontSize = "3.0rem"; // Tamanho padrão da mesa (ajuste conforme o seu CSS)
+        }
+    }
+}
+   
+		//if (dados.atual) {
+                  //      const novaSenha = dados.atual.senha;
+                    //    const novaMesa = dados.atual.mesa;
 
-            const elSenha = document.getElementById('senha-atual-num');
-            const elMesa = document.getElementById('senha-atual-mesa');
+                      //  if (ultimaSenhaExibida !== null && ultimaSenhaExibida !== novaSenha) {
+                        //    anunciarNovaSenha(novaSenha, novaMesa);
+                       // }
 
-            if (dados.atual) {
-                const novaSenha = dados.atual.senha;
-                const novaMesa = dados.atual.mesa;
+                        //ultimaSenhaExibida = novaSenha;
 
-                // 🔔 Se for a PRIMEIRA LEITURA após abrir a página, apenas armazena.
-                // Se for uma SENHA DIFERENTE da anterior, toca o BIP!
-                if (ultimaSenhaExibida !== null && ultimaSenhaExibida !== novaSenha) {
-                    tocarBip();
-                }
+                        //if (elSenha) elSenha.innerText = novaSenha;
+                        //if (elMesa) elMesa.innerText = novaMesa;
+                   // } else {
+                     //   if (elSenha) elSenha.innerText = "---";
+                       // if (elMesa) elMesa.innerText = "MESA --";
+                   // }
 
-                // Atualiza a variável de controle
-                ultimaSenhaExibida = novaSenha;
-
-                if (elSenha) elSenha.innerText = novaSenha;
-                if (elMesa) elMesa.innerText = novaMesa;
-            } else {
-                if (elSenha) elSenha.innerText = "---";
-                if (elMesa) elMesa.innerText = "MESA --";
-            }
-
-            // Atualiza o histórico de 4 senhas anteriores
-            const listaUl = document.getElementById('lista-senhas');
-            if (listaUl) {
-                listaUl.innerHTML = '';
-                if (dados.historico && dados.historico.length > 0) {
-                    dados.historico.forEach(item => {
-                        const li = document.createElement('li');
-                        li.className = 'item-senha-anterior';
-                        li.innerHTML = `<span>${item.senha}</span><span>${item.mesa}</span>`;
-                        listaUl.appendChild(li);
-                    });
-                }
-            }
-        })
-        .catch(err => console.warn("Erro ao buscar senhas:", err));
+                    const listaUl = document.getElementById('lista-senhas');
+                    if (listaUl) {
+                        listaUl.innerHTML = '';
+                        
+			if (dados.historico && dados.historico.length > 0) {
+    dados.historico.forEach(item => {
+        const li = document.createElement('li');
+        
+        // Se a senha tiver mais de 10 caracteres, adiciona a classe 'senha-longa'
+        const ehLonga = item.senha && item.senha.length > 8;
+        li.className = `item-senha-anterior ${ehLonga ? 'senha-longa' : ''}`;
+        
+        li.innerHTML = `<span>${item.senha}</span><span>${item.mesa}</span>`;
+        listaUl.appendChild(li);
+    });
 }
 
-        // Inicialização de todas as funções ao carregar a página
+			//if (dados.historico && dados.historico.length > 0) {
+                          //  dados.historico.forEach(item => {
+                            //    const li = document.createElement('li');
+                              //  li.className = 'item-senha-anterior';
+                                //li.innerHTML = `<span>${item.senha}</span><span>${item.mesa}</span>`;
+                                //listaUl.appendChild(li);
+                           // });
+                        //}
+                    }
+                })
+                .catch(err => console.warn("Erro ao buscar senhas:", err));
+        }
+
+        // Inicialização ao carregar
         window.onload = function() {
-            atualizarDolar();
-            atualizarEuro();
             atualizarClima();
             atualizarSenhasAPI();
             
-            // Intervalos de atualização
-            //setInterval(atualizarDolar, 600000);
-            //setInterval(atualizarEuro, 600000);
             setInterval(atualizarClima, 600000);
-            setInterval(atualizarSenhasAPI, 2000); // Consulta o chamadas.txt a cada 2 segundos
+            setInterval(atualizarSenhasAPI, 2000);
         };
     </script>
 </body>
